@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyTorch模型文件
+*.bin
+*.pth
+*.pt
+
+# 数据文件
+*.json
+Jppoetry.json
+
+# 结果文件
+json_results_all/
+**/json_results_all/
+
+# 虚拟环境
+venv/
+env/
+alphaagent_env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+
+# 测试文件
+test_*.py
+*_test.py
+datatest/
+resulttest/
