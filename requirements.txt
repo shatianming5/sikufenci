@@ -1,4 +1,4 @@
-torch>=1.1.0
+torch>=1.1.0 --index-url https://download.pytorch.org/whl/cpu
 boto3
 pytorch_pretrained_bert==0.6.1
 seqeval

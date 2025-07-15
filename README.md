@@ -4,11 +4,11 @@
 
 ## 特性
 
-- 支持CPU和GPU两种分词模式
-- 自动调用全部CPU核心进行分词（无GPU时）
-- GPU加速分词（有GPU时）
+- 纯CPU分词模式，无需GPU环境
+- 自动调用全部CPU核心进行分词
 - 模块化架构，代码结构清晰
 - 支持批量处理文本文件
+- 优化的CPU性能，适合服务器部署
 
 ## 安装方式
 
@@ -27,7 +27,17 @@ source sikufenci_env/bin/activate  # Linux/Mac
 
 ### 3. 安装依赖
 ```bash
-pip install torch pytorch_pretrained_bert==0.6.1 seqeval boto3 tqdm
+# 安装CPU版本的PyTorch
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# 安装其他依赖
+pip install pytorch_pretrained_bert==0.6.1 seqeval boto3 tqdm numpy
+```
+
+或者直接使用requirements.txt安装：
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install pytorch_pretrained_bert==0.6.1 seqeval boto3 tqdm numpy
 ```
 
 ### 4. 下载预训练模型文件
@@ -140,9 +150,23 @@ sikufenci/
     └── pytorch_model.bin     # 预训练模型（需下载）
 ```
 
+## 系统要求
+
+- Python 3.7+
+- 至少2GB内存
+- 支持多核CPU（自动使用所有核心）
+
+## 性能说明
+
+- **CPU模式**: 本项目已优化为纯CPU版本，无需GPU环境
+- **内存使用**: 加载模型约需要1GB内存
+- **处理速度**: 根据CPU核心数自动调整，多核CPU处理速度更快
+- **批处理**: 支持批量处理大量文档
+
 ## 注意事项
 
 - 首次运行前确保已下载pytorch_model.bin文件
 - 建议使用虚拟环境避免依赖冲突
-- GPU模式需要CUDA环境支持
+- 本版本为纯CPU版本，无需CUDA环境
 - 分词结果使用`/`符号分隔词语
+- 建议在多核CPU环境下运行以获得最佳性能

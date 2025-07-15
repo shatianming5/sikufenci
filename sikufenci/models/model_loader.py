@@ -82,7 +82,3 @@ class ModelLoader:
         if self.model is not None:
             del self.model
             self.model = None
-            
-            # 清理GPU内存
-            if self.device.type == 'cuda':
-                torch.cuda.empty_cache()

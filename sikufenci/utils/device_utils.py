@@ -10,7 +10,7 @@ def check_gpu_available() -> bool:
     Returns:
         bool: GPU是否可用
     """
-    return torch.cuda.is_available()
+    return False  # 强制使用CPU
 
 
 def get_device() -> Tuple[torch.device, int]:
@@ -20,12 +20,8 @@ def get_device() -> Tuple[torch.device, int]:
     Returns:
         Tuple[torch.device, int]: 设备对象和可用核心数
     """
-    if check_gpu_available():
-        device = torch.device("cuda")
-        num_cores = 1  # GPU模式下使用1个核心
-    else:
-        device = torch.device("cpu")
-        num_cores = multiprocessing.cpu_count()  # CPU模式下使用所有核心
+    device = torch.device("cpu")  # 强制使用CPU
+    num_cores = multiprocessing.cpu_count()  # CPU模式下使用所有核心
     
     return device, num_cores
 
@@ -42,11 +38,7 @@ def get_device_info() -> dict:
     info = {
         'device': device,
         'num_cores': num_cores,
-        'device_type': 'GPU' if device.type == 'cuda' else 'CPU'
+        'device_type': 'CPU'  # 强制CPU类型
     }
-    
-    if device.type == 'cuda':
-        info['gpu_name'] = torch.cuda.get_device_name(0)
-        info['gpu_memory'] = torch.cuda.get_device_properties(0).total_memory
     
     return info
