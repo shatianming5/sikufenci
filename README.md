@@ -1,109 +1,148 @@
-# 安装方式
-pip install sikufenci
+# sikufenci - 繁体中文古籍分词工具
 
+这是一个基于sikuBERT预训练模型的自动分词工具，主要用于繁体中文古籍文本的自动分词。不仅能用于带有标点信息的繁体中文语料，也能够很好的适应不含标点语料的分词。
 
-# introduction
-这是一个基于sikuBERT预训练模型的自动分词工具，主要用于繁体中文古籍文本的自动分词,不仅能用于带有标点信息的繁体中文语料，也能够很好的适应不含标点语料的分词。
-工具包具有cpu分词与gpu分词两种模式，如果您的设备没有安装gpu,可以自动调用全部的cpu核心进行分词。
-而在安装gpu后，代码则会利用gpu加速分词速度，gpu与cpu分词的结果完全一致。
+## 特性
 
-# prepare
-运行需要的依赖:
+- 支持CPU和GPU两种分词模式
+- 自动调用全部CPU核心进行分词（无GPU时）
+- GPU加速分词（有GPU时）
+- 模块化架构，代码结构清晰
+- 支持批量处理文本文件
 
-torch>1.1.0
+## 安装方式
 
-boto3
+### 1. 克隆项目
+```bash
+git clone https://github.com/shatianming5/sikufenci.git
+cd sikufenci
+```
 
-pytorch_pretrained_bert==0.6.1
+### 2. 创建虚拟环境（推荐）
+```bash
+python3 -m venv sikufenci_env
+source sikufenci_env/bin/activate  # Linux/Mac
+# 或 sikufenci_env\Scripts\activate  # Windows
+```
 
-seqeval
+### 3. 安装依赖
+```bash
+pip install torch pytorch_pretrained_bert==0.6.1 seqeval boto3 tqdm
+```
 
-tqdm
+### 4. 下载预训练模型文件
 
-建议创建一个虚拟环境，以正常安装sikufenci。
+下载pytorch_model.bin文件并放置到项目目录：
 
-除上述依赖包外，如果要正常运行代码，还需要下载一个用于分词的pytorch_model.bin文件。
-
-该文件可以通过如下的百度云链接下载:
-
+**百度网盘:**
 |链接                                       |提取码     |
 | :------------------------------------------ | :-------- |
 | https://pan.baidu.com/s/1ePPlCpoZ4UTsUaQumMpZTQ   | c9hb |
 
-
-Foreign users can download the fine-tuned model through Google Drive:
+**Google Drive:**
 | Model                                       | Link      |
 | :------------------------------------------ | :-------- |
 | sikubert_vocabtxt(fine-tuned)   | https://drive.google.com/drive/folders/1uA7m54Cz7ZhNGxFM_DsQTpElb9Ns77R5?usp=sharing |
 
+下载完成后，将`pytorch_model.bin`文件放到：
+```
+sikufenci/train_fenci_sikuroberta_vocabtxt/pytorch_model.bin
+```
 
-下载完成后，需要将pytorch_model.bin文件放到sikufenci安装目录的子文件夹的'train_fenci_sikuroberta_vocabtxt'文件夹中。
+## 使用方法
 
-安装目录就是您默认的安装此python工具包的位置。例如，在我的电脑中安装目录就是D:\ProgramData\Anaconda3\envs\pyqt5_py38\Lib\site-packages\sikufenci\train_fenci_sikuroberta_vocabtxt
+### 基本用法
 
-如果上述工作都已完成，就可以进入运行阶段。
-
-# Run
-
-# 调用模块方式
+```python
 from sikufenci import wordsegall_txt
 
-# 使用方式
-wordsegall_txt.TCfenci_all(raw_path='datatest',resultpath='resulttest',max_seq_length=128,eval_batch_size=3)
+# 分词处理
+wordsegall_txt.TCfenci_all(
+    raw_path='datatest',        # 输入文件夹
+    resultpath='resulttest',    # 输出文件夹  
+    max_seq_length=128,         # 最大序列长度
+    eval_batch_size=3           # 批处理大小
+)
+```
 
-TCfenci_all函数含有四个参数:
+### 参数说明
 
-raw_path:代表您当前存放待分词语料的文件夹，可以存放多个txt文件。
+- **raw_path**: 存放待分词txt文件的文件夹路径
+- **resultpath**: 分词结果保存的文件夹路径  
+- **max_seq_length**: 最大截断长度（1-512），超过此长度的序列会被切分
+- **eval_batch_size**: 模型一次处理的序列数量
 
-resultpath:代表您希望分词后文件的存储位置,在案例中是一个被命名为resulttest的空文件夹
+### 使用步骤
 
-max_seq_length:最大截断长度，超过这一长度的待分词序列会被以该值大小等分，例如，当我有一个长度为257的句子时，而max_seq_length值为128时，
-会将句子切分为长度128，128，1的三个子句。所以，为保持语义的完整性，应根据您的分词语料具体情况确定该值。但最高不能超过512。值越大代码运行速度越慢。
+1. **准备输入数据**
+   - 创建输入文件夹（如`datatest`）
+   - 将待分词的txt文件放入文件夹
+   - 确保文件为UTF-8编码
 
-eval_batch_size:模型一次性分词的序列数。
+2. **创建输出文件夹**
+   ```bash
+   mkdir resulttest
+   ```
+
+3. **运行分词**
+   ```python
+   from sikufenci import wordsegall_txt
+   wordsegall_txt.TCfenci_all('datatest', 'resulttest')
+   ```
 
 
-# 数据实例
-您应该按照如下原则安排待分词语料的文件夹:
+## 数据格式要求
 
-1.单个句子长度不宜过长，建议单句长度在512以下。使用换行符"\n"来切分不同的句子。
+### 输入文件要求
 
-2.文件夹中的文件应当以txt为后缀名。
+1. **文件格式**: txt文件，UTF-8编码
+2. **文件结构**: 每行一个句子，使用换行符`\n`分隔  
+3. **句子长度**: 建议单句长度在512字符以下
+4. **字符支持**: 确保文件中的字符能在UTF-8编码下正常显示
 
-3.应尽量确保分词文件中不包含在utf-8编码下无法呈现的字符。
+### 输入示例
 
-真实的数据样例:
-
+```
 魏帝召而謂之曰："卿風度峻整，姿貌秀異，後當升進，何以處官？"琡曰："宗廟之禮，不敢不敬，朝廷之事，不敢不忠，自此以外，非庸臣所及。
 
-"正光中，行洛陽令，部內肅然。
+正光中，行洛陽令，部內肅然。
 
 有犯法者，未加拷掠，直以辭理窮核，多得其情。
+```
 
-於是豪猾畏威，事務簡靜。
+### 输出示例
 
-時以久旱，京師見囚悉召集華林，理問冤滯，洛陽系獄，唯有三人。
-
-魏孝明嘉之，賜縑百匹。
-
-遷吏部，尚書崔亮奏立停年之格，不簡人才，專問勞舊。
-
-
-分词后的数据样例:
-
+```
 魏帝/召/而/謂/之/曰/：/"/卿/風度/峻整/，/姿貌/秀異/，/後/當/升進/，/何以/處/官/？/"/琡/曰/：/"/宗廟/之/禮/，/不/敢/不/敬/，/朝廷/之/事/，/不/敢/不/忠/，/自/此/以/外/，/非/庸臣/所/及/。/
 
-"/正光/中/，/行/洛陽/令/，/部/內/肅然/。/
+正光/中/，/行/洛陽/令/，/部/內/肅然/。/
 
 有/犯/法/者/，/未/加/拷掠/，/直/以/辭理/窮核/，/多/得/其/情/。/
+```
 
-於是/豪猾/畏/威/，/事/務/簡靜/。/
+## 项目结构
 
-時/以/久/旱/，/京師/見/囚/悉/召集/華林/，/理問/冤滯/，/洛陽/系/獄/，/唯/有/三/人/。/
+```
+sikufenci/
+├── core/               # 核心分词功能
+│   ├── wordsegall_txt.py    # 主要分词接口
+│   ├── simple_wordseg.py    # 简化分词接口
+│   └── json_wordseg.py      # JSON文件处理
+├── models/             # 模型相关
+│   ├── tokenizer.py         # 分词器
+│   ├── model_loader.py      # 模型加载器
+│   └── predictor.py         # 预测器
+├── utils/              # 工具函数
+│   ├── file_utils.py        # 文件处理
+│   ├── text_utils.py        # 文本处理
+│   └── device_utils.py      # 设备检测
+└── train_fenci_sikuroberta_vocabtxt/  # 模型文件目录
+    └── pytorch_model.bin     # 预训练模型（需下载）
+```
 
-魏孝明/嘉/之/，/賜/縑/百/匹/。/
+## 注意事项
 
-遷/吏部/，/尚書/崔亮/奏/立/停/年/之/格/，/不/簡/人才/，/專/問/勞舊/。/
-
-
-可以看到模型具有较好的分词效果。有效解决当前缺少面向繁体中文的古文分词工具问题。
+- 首次运行前确保已下载pytorch_model.bin文件
+- 建议使用虚拟环境避免依赖冲突
+- GPU模式需要CUDA环境支持
+- 分词结果使用`/`符号分隔词语
